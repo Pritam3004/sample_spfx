@@ -6,4 +6,5 @@ export interface IHelloWorldProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   context: any;
+  showConsoleLogs:()=>void;
 }

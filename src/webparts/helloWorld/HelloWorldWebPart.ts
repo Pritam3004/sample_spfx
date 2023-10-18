@@ -31,6 +31,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         context: this.context,
+        showConsoleLogs:this.showConsoleLogs
       }
     );
 
@@ -43,7 +44,9 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     getSP(this.context);
   }
 
-
+  showConsoleLogs = ()=>{
+    console.log('Working');
+  }
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
     if (!currentTheme) {
       return;

@@ -49,6 +49,15 @@ Short summary on functionality and used technologies.
   - **gulp serve**
 
 > Include any additional steps as needed.
+npm install gulp-cli yo @microsoft/generator-sharepoint --global
+
+gulp trust-dev-cert
+
+yo @microsoft/sharepoint
+
+gulp build --ship
+gulp package-solution --ship
+
 
 ## Features
 

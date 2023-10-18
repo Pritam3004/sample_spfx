@@ -11,39 +11,53 @@ import { SPFI } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
+import { PrimaryButton } from "@fluentui/react";
 
 interface IHelloWorldState {
   items: string[];
 }
 
-export default class HelloWorld extends React.Component<IHelloWorldProps, IHelloWorldState> {
+export default class HelloWorld extends React.Component<
+  IHelloWorldProps,
+  IHelloWorldState
+> {
   public _sp: SPFI;
   private listName = "TestList";
 
   constructor(props: IHelloWorldProps) {
     super(props);
-    this.state = {items:[]};
+    this.state = { items: [] };
     this._sp = getSP();
     console.log(this._sp);
   }
 
-  componentDidMount(): void {
-    let items:string[]=[];
-    this._sp.web.lists
+  async componentDidMount(): Promise<void> {
+    let items: string[] = [];
+    let res: any = await this._sp.web.lists
       .getByTitle(this.listName)
-      .items()
-      .then((res) => {
-        res && res.length > 0 && res.forEach((item) => {
+      .items.top(2)
+      .getPaged<{ Title: string }[]>();
+
+    res &&
+      res.results &&
+      res.results.forEach((item: any) => {
+        // eslint-disable-next-line no-unused-expressions
+        item && items.push(item["Title"]);
+      });
+    
+
+    if (res.hasNext) {
+      // this will carry over the type specified in the original query for the results array
+      res = await res.getNext();
+      res.results &&
+        res.results.forEach((item: any) => {
           // eslint-disable-next-line no-unused-expressions
-          item && items.push(item['Title']);
+          item && items.push(item["Title"]);
         });
-        this.setState({
-          items:items
-        })
-      }).
-      catch(e=>{
-        console.log(e);
-      })
+    }
+    this.setState({
+      items: items,
+    });
   }
 
   public render(): React.ReactElement<IHelloWorldProps> {
@@ -61,16 +75,15 @@ export default class HelloWorld extends React.Component<IHelloWorldProps, IHello
           hasTeamsContext ? styles.teams : ""
         }`}
       >
-        {
-          this.state.items && this.state.items.length > 0 && this.state.items.map((item,i)=>{
+        {this.state.items &&
+          this.state.items.length > 0 &&
+          this.state.items.map((item, i) => {
             return (
               <div key={i}>
                 <h5>{item}</h5>
-
               </div>
             );
-          })
-        }
+          })}
         <div className={styles.welcome}>
           <img
             alt=""
@@ -89,6 +102,12 @@ export default class HelloWorld extends React.Component<IHelloWorldProps, IHello
         </div>
         <div>
           <h3>Welcome to SharePoint Framework!</h3>
+          <PrimaryButton
+            text="Test button"
+            onClick={() => {
+              this.props.showConsoleLogs();
+            }}
+          ></PrimaryButton>
           <p>
             The SharePoint Framework (SPFx) is a extensibility model for
             Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest
